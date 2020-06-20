@@ -11,8 +11,10 @@ Dim year_close As Double
 Dim yearly_change As Double
 Dim percent_change As Double
 Dim Summary_Table_Row As Integer
+Dim start As Integer
 
-'this prevents my overflow error
+
+'this prevents an overflow error "iferror"
 On Error Resume Next
 
 'run through each worksheet
@@ -26,33 +28,42 @@ For Each ws In ThisWorkbook.Worksheets
     'setup integers for loop
     Summary_Table_Row = 2
 
+    start = 2
+
     'loop
-        For I = 2 To ws.UsedRange.Rows.Count
-             If ws.Cells(I + 1, 1).Value <> ws.Cells(I, 1).Value Then
+        For i = 2 To ws.UsedRange.Rows.Count
+             If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
             
             'find all the values
-            ticker = ws.Cells(I, 1).Value
-            vol = ws.Cells(I, 7).Value
-
-            year_open = ws.Cells(I, 3).Value
-            year_close = ws.Cells(I, 6).Value
-
-            yearly_change = year_close - year_open
-            percent_change = (year_close - year_open) / year_close
+                ticker = ws.Cells(i, 1).Value
+                vol = ws.Cells(i, 7).Value
+            'if "A" turns to "AA" store last row number and close value
+            'next set is 262 +1
+            
+                start = i + 1
+            
+            
+                year_open = ws.Cells(i + (-i + 2), 3).Value
+                year_close = ws.Cells(i, 6).Value
+    
+                yearly_change = year_close - year_open
+                percent_change = (year_close - year_open) / year_close
+    
+                vol = ws.Range(i, 7).Value
 
             'insert values into summary
-            ws.Cells(Summary_Table_Row, 9).Value = ticker
-            ws.Cells(Summary_Table_Row, 10).Value = yearly_change
-            ws.Cells(Summary_Table_Row, 11).Value = percent_change
-            ws.Cells(Summary_Table_Row, 12).Value = vol
-            Summary_Table_Row = Summary_Table_Row + 1
+                ws.Cells(Summary_Table_Row, 9).Value = ticker
+                ws.Cells(Summary_Table_Row, 10).Value = yearly_change
+                ws.Cells(Summary_Table_Row, 11).Value = percent_change
+                ws.Cells(Summary_Table_Row, 12).Value = vol
+                Summary_Table_Row = Summary_Table_Row + 1
 
-             vol = 0
+         
         
         End If
 
 'finish loop
-    Next I
+    Next i
     
 ws.Columns("K").NumberFormat = "0.00%"
 
@@ -88,3 +99,7 @@ Next ws
 
 
 End Sub
+
+'citation: adapted from stackoverflow and various sites found via google
+
+
